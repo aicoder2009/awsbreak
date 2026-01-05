@@ -8,7 +8,9 @@ aws_hit_breaks.egg-info/entry_points.txt
 aws_hit_breaks.egg-info/requires.txt
 aws_hit_breaks.egg-info/top_level.txt
 aws_hit_breaks/auth/__init__.py
+aws_hit_breaks/auth/iam_auth.py
 aws_hit_breaks/cli/__init__.py
+aws_hit_breaks/cli/interactive.py
 aws_hit_breaks/cli/main.py
 aws_hit_breaks/core/__init__.py
 aws_hit_breaks/core/config.py
@@ -17,3 +19,4 @@ aws_hit_breaks/services/__init__.py
 aws_hit_breaks/state/__init__.py
 aws_hit_breaks/utils/__init__.py
 tests/test_config.py
+tests/test_iam_auth.py

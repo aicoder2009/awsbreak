@@ -10,8 +10,8 @@ from typing import Optional
 import click
 from rich.console import Console
 
-from aws_hit_breaks.auth.config import ConfigManager
-from aws_hit_breaks.auth.iam import IAMRoleManager
+from aws_hit_breaks.core.config import ConfigManager
+from aws_hit_breaks.auth.iam_auth import IAMRoleAuthenticator
 from aws_hit_breaks.cli.interactive import InteractiveFlow
 from aws_hit_breaks.core.exceptions import AWSBreakError
 
@@ -55,11 +55,11 @@ def main(
     try:
         # Initialize core components
         config_manager = ConfigManager()
-        iam_manager = IAMRoleManager(config_manager)
+        iam_manager = IAMRoleAuthenticator(config_manager)
         interactive_flow = InteractiveFlow(console, config_manager, iam_manager)
         
         # Check if IAM role is configured
-        if not config_manager.is_configured():
+        if not config_manager.config_exists():
             console.print("🚨 [bold red]AWS Hit Breaks - Emergency Cost Control[/bold red]")
             console.print("━" * 50)
             console.print()

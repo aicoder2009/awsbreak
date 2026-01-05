@@ -1,0 +1,4 @@
+# file: /Users/karthickarun/awsbreak/aws_hit_breaks/cli/interactive.py
+# hypothesis_version: 6.149.0
+
+['1', '2', '6. Copy the role ARN', 'Choose setup method:', 'Please check:', 'Select option', 'blue', 'ec2:StartInstances', 'ec2:StopInstances', 'ecs:DescribeServices', 'ecs:UpdateService', 'pricing:GetProducts', 'rds:StartDBInstance', 'rds:StopDBInstance', '━']
