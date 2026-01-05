@@ -1,3 +1,4 @@
+LICENSE
 README.md
 pyproject.toml
 aws_hit_breaks/__init__.py
@@ -16,7 +17,15 @@ aws_hit_breaks/core/__init__.py
 aws_hit_breaks/core/config.py
 aws_hit_breaks/core/exceptions.py
 aws_hit_breaks/services/__init__.py
+aws_hit_breaks/services/autoscaling.py
+aws_hit_breaks/services/base.py
+aws_hit_breaks/services/ec2.py
+aws_hit_breaks/services/ecs.py
+aws_hit_breaks/services/models.py
+aws_hit_breaks/services/rds.py
 aws_hit_breaks/state/__init__.py
 aws_hit_breaks/utils/__init__.py
 tests/test_config.py
 tests/test_iam_auth.py
+tests/test_interactive_cli.py
+tests/test_service_discovery.py

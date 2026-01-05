@@ -1,0 +1,4 @@
+# file: /Users/karthickarun/awsbreak/aws_hit_breaks/services/ecs.py
+# hypothesis_version: 6.149.0
+
+[0.0, 600, 'ACTIVE', 'Delay', 'EC2', 'MaxAttempts', 'clusterArn', 'clusterArns', 'clusterName', 'cluster_arn', 'cluster_name', 'clusters', 'desiredCount', 'desired_count', 'discovery', 'ecs', 'key', 'launchType', 'launch_type', 'loadBalancers', 'load_balancers', 'networkConfiguration', 'pause', 'pendingCount', 'pending_count', 'platformVersion', 'platform_version', 'resume', 'running', 'runningCount', 'running_count', 'scaling_down', 'scaling_up', 'serviceArn', 'serviceArns', 'serviceName', 'serviceRegistries', 'service_arn', 'service_registries', 'services', 'services_stable', 'status', 'stopped', 'tags', 'taskDefinition', 'task_definition', 'value']

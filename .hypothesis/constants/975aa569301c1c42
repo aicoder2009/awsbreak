@@ -1,0 +1,4 @@
+# file: /Users/karthickarun/awsbreak/aws_hit_breaks/services/rds.py
+# hypothesis_version: 6.149.0
+
+[0.0, 'AllocatedStorage', 'AvailabilityZone', 'AvailabilityZones', 'DBClusterArn', 'DBClusterIdentifier', 'DBClusterMembers', 'DBClusters', 'DBInstanceArn', 'DBInstanceClass', 'DBInstanceIdentifier', 'DBInstanceStatus', 'DBInstances', 'DBSubnetGroup', 'DBSubnetGroupName', 'Delay', 'Engine', 'EngineVersion', 'Key', 'MaxAttempts', 'MultiAZ', 'Status', 'StorageType', 'TagList', 'Value', 'VpcSecurityGroupId', 'VpcSecurityGroups', 'allocated_storage', 'availability_zone', 'availability_zones', 'available', 'cluster_members', 'db_cluster', 'db_cluster_available', 'db_cluster_stopped', 'db_instance', 'db_instance_stopped', 'db_subnet_group', 'deleting', 'discovery', 'engine', 'engine_version', 'instance_class', 'multi_az', 'pause', 'rds', 'resource_type', 'resume', 'stopped', 'storage_type', 'vpc_security_groups']

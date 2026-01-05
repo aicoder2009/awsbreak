@@ -304,18 +304,23 @@ class TestInteractiveFlowEdgeCases:
             with patch('rich.prompt.Prompt.ask') as mock_prompt, \
                  patch('rich.prompt.Confirm.ask') as mock_confirm, \
                  patch.object(iam_manager, 'validate_role_access', return_value=False), \
-                 patch('sys.exit') as mock_exit:
+                 patch('sys.exit', side_effect=SystemExit(1)) as mock_exit:
                 
                 mock_prompt.side_effect = [
                     "1",  # CloudFormation choice
-                    "arn:aws:iam::123456789012:role/TestRole"  # Valid ARN format
+                    "arn:aws:iam::123456789012:role/TestRole",  # Valid ARN format (first attempt)
                 ]
-                mock_confirm.side_effect = [True, False]  # Confirm deployment, then refuse retry
+                mock_confirm.side_effect = [
+                    True,   # Confirm deployment
+                    False   # Refuse retry - should trigger sys.exit(1)
+                ]
                 
                 # Should exit when user refuses to retry
-                interactive_flow.setup_iam_role()
+                with pytest.raises(SystemExit) as exc_info:
+                    interactive_flow.setup_iam_role()
                 
-                # Should have called sys.exit
+                # Should have called sys.exit with code 1
+                assert exc_info.value.code == 1
                 mock_exit.assert_called_once_with(1)
     
     def test_cloudformation_template_display(self):

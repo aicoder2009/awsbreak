@@ -1,0 +1,4 @@
+# file: /Users/karthickarun/awsbreak/aws_hit_breaks/services/autoscaling.py
+# hypothesis_version: 6.149.0
+
+[0.0, 600, 'AZRebalance', 'AddToLoadBalancer', 'AlarmNotification', 'AutoScalingGroupName', 'AutoScalingGroups', 'AvailabilityZones', 'DesiredCapacity', 'HealthCheck', 'HealthStatus', 'InService', 'InstanceId', 'Instances', 'Key', 'Launch', 'LaunchTemplate', 'LifecycleState', 'LoadBalancerNames', 'MaxSize', 'MinSize', 'MixedInstancesPolicy', 'ProcessName', 'ReplaceUnhealthy', 'ScheduledActions', 'SuspendedProcesses', 'Tags', 'TargetGroupARNs', 'Terminate', 'VPCZoneIdentifier', 'Value', 'autoscaling', 'availability_zones', 'desired_capacity', 'discovery', 'health_status', 'instance_id', 'instances', 'launch_template', 'lifecycle_state', 'load_balancer_names', 'max_size', 'min_size', 'pause', 'paused', 'resume', 'running', 'stopped', 'suspended', 'suspended_processes', 'target_group_arns', 'unknown', 'vpc_zone_identifier']
