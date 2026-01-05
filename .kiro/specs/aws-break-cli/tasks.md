@@ -32,7 +32,7 @@ This implementation plan creates a Python-based CLI tool that provides emergency
     - **Validates: Requirements 8.1, 8.2, 8.3, 8.4, 8.5**
 
 - [-] 3. Create interactive CLI interface with Rich formatting
-  - [ ] 3.1 Implement main CLI command with Click framework
+  - [-] 3.1 Implement main CLI command with Click framework
     - Create "aws hit breaks" main command entry point
     - Add --resume, --dry-run, --region flags
     - _Requirements: 9.1, 9.5_
