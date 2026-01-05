@@ -1,0 +1,4 @@
+# file: /Users/karthickarun/awsbreak/aws_hit_breaks/services/operations.py
+# hypothesis_version: 6.149.0
+
+[0.0, 'autoscaling', 'available', 'ec2', 'ecs', 'exclude_resource_ids', 'exclude_tags', 'failed_operations', 'failed_resources', 'pause', 'rds', 'regions', 'resource_ids', 'resume', 'running', 'scaling_down', 'scaling_up', 'service_types', 'suspended', 'tags']

@@ -1,0 +1,4 @@
+# file: /Users/karthickarun/awsbreak/aws_hit_breaks/services/orchestrator.py
+# hypothesis_version: 6.149.0
+
+[0.0, 'autoscaling', 'by_service_type', 'current_state', 'ec2', 'ecs', 'error_message', 'failed', 'failed_operations', 'failed_resources', 'metadata', 'pause', 'rds', 'region', 'resource_id', 'resume', 'service_type', 'success', 'success_rate', 'total', 'total_operations', 'us-east-1']
