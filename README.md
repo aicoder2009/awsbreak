@@ -1,4 +1,4 @@
-# AWS Hit Breaks 🚨
+# AWS Breaks 🚨 ⚠️
 
 Emergency cost control for AWS accounts. Stop all services to save money without deleting anything.
 
