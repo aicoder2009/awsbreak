@@ -1,0 +1,4 @@
+# file: /Users/karthickarun/awsbreak/aws_hit_breaks/auth/iam_auth.py
+# hypothesis_version: 6.149.0
+
+[900, 3600, 'AccessDenied', 'AccessKeyId', 'Code', 'Credentials', 'Error', 'Expiration', 'Message', 'SecretAccessKey', 'SessionToken', 'Unknown', 'sts']

@@ -7,7 +7,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, Optional
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class Config(BaseModel):
@@ -18,7 +18,8 @@ class Config(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow, description="Configuration creation timestamp")
     version: str = Field(default="1.0.0", description="Configuration version")
     
-    @validator('iam_role_arn')
+    @field_validator('iam_role_arn')
+    @classmethod
     def validate_iam_role_arn(cls, v: str) -> str:
         """Validate IAM role ARN format."""
         arn_pattern = r'^arn:aws:iam::\d{12}:role/[a-zA-Z0-9+=,.@_-]+$'
@@ -29,7 +30,8 @@ class Config(BaseModel):
             )
         return v
     
-    @validator('default_region')
+    @field_validator('default_region')
+    @classmethod
     def validate_region(cls, v: str) -> str:
         """Validate AWS region format."""
         region_pattern = r'^[a-z]{2}-[a-z]+-\d{1}$'
@@ -78,9 +80,10 @@ class ConfigManager:
             
             # Convert created_at string back to datetime if needed
             if isinstance(config_data.get('created_at'), str):
-                config_data['created_at'] = datetime.fromisoformat(
-                    config_data['created_at'].replace('Z', '+00:00')
-                )
+                # Parse ISO format and ensure it's timezone-naive
+                dt_str = config_data['created_at'].replace('Z', '+00:00')
+                dt_with_tz = datetime.fromisoformat(dt_str)
+                config_data['created_at'] = dt_with_tz.replace(tzinfo=None)
             
             return Config(**config_data)
         
@@ -100,7 +103,7 @@ class ConfigManager:
         """
         try:
             # Convert to dict and handle datetime serialization
-            config_dict = config.dict()
+            config_dict = config.model_dump()
             config_dict['created_at'] = config.created_at.isoformat() + 'Z'
             
             # Write atomically by writing to temp file first

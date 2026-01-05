@@ -12,7 +12,7 @@ This implementation plan creates a Python-based CLI tool that provides emergency
   - Configure entry point for "aws-hit-breaks" command
   - _Requirements: 9.1_
 
-- [-] 2. Implement core configuration and authentication system
+- [x] 2. Implement core configuration and authentication system
   - [x] 2.1 Create configuration manager for local config file
     - Handle ~/.aws-hit-breaks/config.json creation and reading
     - Validate IAM role ARN format and storage
@@ -27,11 +27,11 @@ This implementation plan creates a Python-based CLI tool that provides emergency
     - Handle role assumption errors with clear messaging
     - _Requirements: 8.1, 8.4_
 
-  - [-] 2.4 Write property test for IAM role authentication
+  - [x] 2.4 Write property test for IAM role authentication
     - **Property 13: IAM Role Authentication**
     - **Validates: Requirements 8.1, 8.2, 8.3, 8.4, 8.5**
 
-- [ ] 3. Create interactive CLI interface with Rich formatting
+- [-] 3. Create interactive CLI interface with Rich formatting
   - [ ] 3.1 Implement main CLI command with Click framework
     - Create "aws hit breaks" main command entry point
     - Add --resume, --dry-run, --region flags

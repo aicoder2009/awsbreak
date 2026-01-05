@@ -15,11 +15,12 @@ from aws_hit_breaks.core.config import Config, ConfigManager
 def valid_iam_role_arn(draw):
     """Generate valid IAM role ARNs."""
     account_id = draw(st.integers(min_value=100000000000, max_value=999999999999))
+    # Generate role names with only valid characters for IAM role names
     role_name = draw(st.text(
-        alphabet=st.characters(whitelist_categories=('Lu', 'Ll', 'Nd'), whitelist_characters='+=,.@_-'),
+        alphabet='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+=,.@_-',
         min_size=1,
         max_size=64
-    ))
+    ).filter(lambda x: x and not x.startswith('-') and not x.endswith('-') and x.replace('-', '').replace('_', '').replace('.', '').replace('+', '').replace('=', '').replace(',', '').replace('@', '')))
     return f"arn:aws:iam::{account_id}:role/{role_name}"
 
 
@@ -38,8 +39,8 @@ def valid_config(draw):
     return Config(
         iam_role_arn=draw(valid_iam_role_arn()),
         default_region=draw(valid_aws_region()),
-        created_at=draw(st.datetimes(min_value=datetime(2020, 1, 1), max_value=datetime(2030, 12, 31))),
-        version=draw(st.text(min_size=1, max_size=20))
+        created_at=draw(st.datetimes(min_value=datetime(2020, 1, 1), max_value=datetime(2030, 12, 31))).replace(tzinfo=None),
+        version=draw(st.text(min_size=1, max_size=20).filter(lambda x: x.strip()))
     )
 
 
