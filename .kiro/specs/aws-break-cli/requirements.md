@@ -101,14 +101,26 @@ AWS Break is a CLI tool that acts like a car's brakes for AWS accounts, allowing
 4. THE AWS_Break_CLI SHALL support exporting cost reports in JSON and CSV formats
 5. WHEN cost data is unavailable, THE AWS_Break_CLI SHALL indicate which resources could not be estimated
 
-### Requirement 8: AWS Authentication and Permissions
+### Requirement 8: IAM Role-Based Authentication
 
-**User Story:** As a security-conscious user, I want the tool to use standard AWS authentication methods, so that I can maintain proper access controls and audit trails.
+**User Story:** As a security-conscious user, I want the tool to use a dedicated IAM role with minimal permissions, so that I can maintain proper access controls and audit trails while keeping my account secure.
 
 #### Acceptance Criteria
 
-1. THE AWS_Break_CLI SHALL use AWS SDK default credential chain for authentication
-2. WHEN credentials are missing or invalid, THE AWS_Break_CLI SHALL provide clear guidance on authentication setup
-3. WHEN insufficient permissions are detected, THE AWS_Break_CLI SHALL list the required IAM permissions
-4. THE AWS_Break_CLI SHALL support AWS profiles and role assumption for cross-account operations
-5. WHEN operating across regions, THE AWS_Break_CLI SHALL handle regional service availability gracefully
+1. WHEN the tool is run for the first time, THE AWS_Break_CLI SHALL detect missing IAM role configuration and guide the user through setup
+2. WHEN setting up authentication, THE AWS_Break_CLI SHALL provide a CloudFormation template with minimal required IAM permissions
+3. WHEN the IAM role is configured, THE AWS_Break_CLI SHALL store the role ARN in a local configuration file
+4. THE AWS_Break_CLI SHALL use STS assume role for all AWS API operations using the configured role
+5. WHEN the IAM role is missing or invalid, THE AWS_Break_CLI SHALL provide clear guidance on role setup and required permissions
+
+### Requirement 9: Simple Interactive Experience
+
+**User Story:** As a busy developer, I want a simple command that guides me through the process, so that I can quickly pause my AWS costs without learning complex CLI options.
+
+#### Acceptance Criteria
+
+1. WHEN I run "aws hit breaks", THE AWS_Break_CLI SHALL automatically discover resources in my default region
+2. WHEN resources are found, THE AWS_Break_CLI SHALL display them in a clear, readable format with estimated costs
+3. WHEN displaying resources, THE AWS_Break_CLI SHALL show total monthly cost and potential savings
+4. WHEN I confirm the pause operation, THE AWS_Break_CLI SHALL execute it and show progress
+5. THE AWS_Break_CLI SHALL provide simple resume functionality with "aws hit breaks --resume"
