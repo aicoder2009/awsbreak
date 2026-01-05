@@ -1,0 +1,2 @@
+[console_scripts]
+aws-hit-breaks = aws_hit_breaks.cli.main:main

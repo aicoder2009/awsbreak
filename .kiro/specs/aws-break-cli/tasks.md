@@ -6,28 +6,28 @@ This implementation plan creates a Python-based CLI tool that provides emergency
 
 ## Tasks
 
-- [ ] 1. Set up Python project structure and dependencies
+- [x] 1. Set up Python project structure and dependencies
   - Create pyproject.toml with dependencies (boto3, click, rich, hypothesis)
   - Set up package structure with proper __init__.py files
   - Configure entry point for "aws-hit-breaks" command
   - _Requirements: 9.1_
 
-- [ ] 2. Implement core configuration and authentication system
-  - [ ] 2.1 Create configuration manager for local config file
+- [-] 2. Implement core configuration and authentication system
+  - [x] 2.1 Create configuration manager for local config file
     - Handle ~/.aws-hit-breaks/config.json creation and reading
     - Validate IAM role ARN format and storage
     - _Requirements: 8.3_
 
-  - [ ] 2.2 Write property test for configuration round trip
+  - [x] 2.2 Write property test for configuration round trip
     - **Property 3: State Persistence Round Trip**
     - **Validates: Requirements 1.5, 6.1**
 
-  - [ ] 2.3 Implement IAM role authentication with STS
+  - [x] 2.3 Implement IAM role authentication with STS
     - Create STS assume role functionality using boto3
     - Handle role assumption errors with clear messaging
     - _Requirements: 8.1, 8.4_
 
-  - [ ] 2.4 Write property test for IAM role authentication
+  - [-] 2.4 Write property test for IAM role authentication
     - **Property 13: IAM Role Authentication**
     - **Validates: Requirements 8.1, 8.2, 8.3, 8.4, 8.5**
 

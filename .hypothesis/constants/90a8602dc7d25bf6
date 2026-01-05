@@ -1,0 +1,4 @@
+# file: /Users/karthickarun/awsbreak/aws_hit_breaks/__init__.py
+# hypothesis_version: 6.149.0
+
+['1.0.0', 'AWS Break CLI Team', 'AWSBreakError']
