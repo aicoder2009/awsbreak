@@ -1,0 +1,103 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: IAM Role for AWS Hit Breaks CLI - Emergency cost control tool
+
+Parameters:
+  RoleName:
+    Type: String
+    Default: AWSHitBreaksRole
+    Description: Name of the IAM role to create
+
+Resources:
+  AWSHitBreaksRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref RoleName
+      Description: IAM role with minimal permissions for AWS Hit Breaks CLI
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
+            Action: sts:AssumeRole
+            Condition:
+              StringEquals:
+                sts:ExternalId: aws-hit-breaks
+      MaxSessionDuration: 3600
+      Tags:
+        - Key: Application
+          Value: aws-hit-breaks
+        - Key: Purpose
+          Value: emergency-cost-control
+
+  AWSHitBreaksPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: AWSHitBreaksPolicy
+      Roles:
+        - !Ref AWSHitBreaksRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          # EC2 permissions
+          - Sid: EC2Management
+            Effect: Allow
+            Action:
+              - ec2:DescribeInstances
+              - ec2:DescribeInstanceStatus
+              - ec2:StopInstances
+              - ec2:StartInstances
+            Resource: '*'
+
+          # RDS permissions
+          - Sid: RDSManagement
+            Effect: Allow
+            Action:
+              - rds:DescribeDBInstances
+              - rds:DescribeDBClusters
+              - rds:StopDBInstance
+              - rds:StartDBInstance
+              - rds:StopDBCluster
+              - rds:StartDBCluster
+            Resource: '*'
+
+          # ECS permissions
+          - Sid: ECSManagement
+            Effect: Allow
+            Action:
+              - ecs:DescribeServices
+              - ecs:DescribeClusters
+              - ecs:ListClusters
+              - ecs:ListServices
+              - ecs:UpdateService
+            Resource: '*'
+
+          # Auto Scaling permissions
+          - Sid: AutoScalingManagement
+            Effect: Allow
+            Action:
+              - autoscaling:DescribeAutoScalingGroups
+              - autoscaling:SuspendProcesses
+              - autoscaling:ResumeProcesses
+              - autoscaling:SetDesiredCapacity
+            Resource: '*'
+
+          # Pricing API for cost estimation
+          - Sid: PricingAccess
+            Effect: Allow
+            Action:
+              - pricing:GetProducts
+            Resource: '*'
+
+Outputs:
+  RoleARN:
+    Description: ARN of the IAM role for AWS Hit Breaks CLI
+    Value: !GetAtt AWSHitBreaksRole.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-RoleARN'
+
+  RoleName:
+    Description: Name of the IAM role
+    Value: !Ref AWSHitBreaksRole
+    Export:
+      Name: !Sub '${AWS::StackName}-RoleName'
