@@ -4,10 +4,13 @@ ECS service manager for discovering and managing ECS services.
 from typing import List, Dict, Any
 from datetime import datetime
 import time
+import logging
 
 from .base import BaseServiceManager
 from .models import Resource, OperationResult
 from ..core.exceptions import ServiceError
+
+logger = logging.getLogger(__name__)
 
 
 class ECSServiceManager(BaseServiceManager):
@@ -47,20 +50,26 @@ class ECSServiceManager(BaseServiceManager):
                 cluster_name = cluster['clusterName']
                 cluster_arn = cluster['clusterArn']
                 
-                # Get services in this cluster
-                services_response = self.client.list_services(cluster=cluster_arn)
-                service_arns = services_response['serviceArns']
-                
+                # Get services in this cluster (with pagination)
+                service_arns = []
+                paginator = self.client.get_paginator('list_services')
+                for page in paginator.paginate(cluster=cluster_arn):
+                    service_arns.extend(page['serviceArns'])
+
                 if not service_arns:
                     continue
+
+                # Get service details (describe_services accepts max 10 at a time)
+                all_services = []
+                for i in range(0, len(service_arns), 10):
+                    batch = service_arns[i:i+10]
+                    services_detail = self.client.describe_services(
+                        cluster=cluster_arn,
+                        services=batch
+                    )
+                    all_services.extend(services_detail['services'])
                 
-                # Get service details
-                services_detail = self.client.describe_services(
-                    cluster=cluster_arn,
-                    services=service_arns
-                )
-                
-                for service in services_detail['services']:
+                for service in all_services:
                     # Skip inactive services
                     if service['status'] != 'ACTIVE':
                         continue
@@ -73,9 +82,9 @@ class ECSServiceManager(BaseServiceManager):
                         )
                         for tag in tag_response['tags']:
                             tags[tag['key']] = tag['value']
-                    except Exception:
-                        # Tags might not be accessible, continue without them
-                        pass
+                    except Exception as e:
+                        # Log warning but continue - tags are non-critical
+                        logger.warning(f"Failed to fetch tags for ECS service {service['serviceName']}: {e}")
                     
                     # Determine current state based on desired vs running count
                     desired_count = service['desiredCount']

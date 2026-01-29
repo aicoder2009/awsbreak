@@ -4,7 +4,7 @@ import boto3
 from botocore.exceptions import ClientError, NoCredentialsError, BotoCoreError
 from typing import Dict, Optional, Any
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from aws_hit_breaks.core.config import Config, ConfigManager
 from aws_hit_breaks.core.exceptions import AuthenticationError, ConfigurationError
@@ -158,8 +158,8 @@ class IAMRoleAuthenticator:
         """
         # Check if we have cached credentials that are still valid
         if self._cached_credentials and self._credentials_expiry:
-            # Add 5 minute buffer before expiry
-            if datetime.utcnow() < (self._credentials_expiry - timedelta(minutes=5)):
+            # Add 5 minute buffer before expiry (use timezone-aware comparison)
+            if datetime.now(timezone.utc) < (self._credentials_expiry - timedelta(minutes=5)):
                 logger.debug("Using cached AWS credentials")
                 return self._cached_credentials
         
@@ -179,9 +179,10 @@ class IAMRoleAuthenticator:
             # Extract credentials
             credentials = response['Credentials']
             
-            # Cache credentials and expiry time
+            # Cache credentials and expiry time (keep timezone-aware)
             self._cached_credentials = credentials
-            self._credentials_expiry = credentials['Expiration'].replace(tzinfo=None)
+            # AWS returns timezone-aware datetime, keep it that way for accurate comparison
+            self._credentials_expiry = credentials['Expiration'].astimezone(timezone.utc)
             
             logger.info("Successfully assumed IAM role")
             return credentials

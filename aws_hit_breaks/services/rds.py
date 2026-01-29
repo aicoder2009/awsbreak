@@ -3,10 +3,13 @@ RDS service manager for discovering and managing RDS instances and clusters.
 """
 from typing import List, Dict, Any
 from datetime import datetime
+import logging
 
 from .base import BaseServiceManager
 from .models import Resource, OperationResult
 from ..core.exceptions import ServiceError
+
+logger = logging.getLogger(__name__)
 
 
 class RDSServiceManager(BaseServiceManager):
@@ -43,9 +46,9 @@ class RDSServiceManager(BaseServiceManager):
                     )
                     for tag in tag_response['TagList']:
                         tags[tag['Key']] = tag['Value']
-                except Exception:
-                    # Tags might not be accessible, continue without them
-                    pass
+                except Exception as e:
+                    # Log warning but continue - tags are non-critical
+                    logger.warning(f"Failed to fetch tags for RDS instance {instance['DBInstanceIdentifier']}: {e}")
                 
                 resource = Resource(
                     service_type='rds',
@@ -83,9 +86,9 @@ class RDSServiceManager(BaseServiceManager):
                     )
                     for tag in tag_response['TagList']:
                         tags[tag['Key']] = tag['Value']
-                except Exception:
-                    # Tags might not be accessible, continue without them
-                    pass
+                except Exception as e:
+                    # Log warning but continue - tags are non-critical
+                    logger.warning(f"Failed to fetch tags for RDS cluster {cluster['DBClusterIdentifier']}: {e}")
                 
                 resource = Resource(
                     service_type='rds',

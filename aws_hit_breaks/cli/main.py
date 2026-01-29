@@ -13,10 +13,20 @@ from rich.console import Console
 from aws_hit_breaks.core.config import ConfigManager
 from aws_hit_breaks.auth.iam_auth import IAMRoleAuthenticator
 from aws_hit_breaks.cli.interactive import InteractiveFlow
-from aws_hit_breaks.core.exceptions import AWSBreakError
+from aws_hit_breaks.core.exceptions import (
+    AWSBreakError, AuthenticationError, ConfigurationError, ServiceError
+)
 
 
 console = Console()
+
+# Exit codes for different error types
+EXIT_SUCCESS = 0
+EXIT_GENERAL_ERROR = 1
+EXIT_CONFIG_ERROR = 2
+EXIT_AUTH_ERROR = 3
+EXIT_SERVICE_ERROR = 4
+EXIT_USER_CANCELLED = 130
 
 
 @click.command()
@@ -79,16 +89,25 @@ def main(
             # Default: discover and pause flow
             interactive_flow.discover_and_pause(region, dry_run)
             
+    except ConfigurationError as e:
+        console.print(f"❌ [red]Configuration error: {e}[/red]")
+        sys.exit(EXIT_CONFIG_ERROR)
+    except AuthenticationError as e:
+        console.print(f"❌ [red]Authentication error: {e}[/red]")
+        sys.exit(EXIT_AUTH_ERROR)
+    except ServiceError as e:
+        console.print(f"❌ [red]Service error: {e}[/red]")
+        sys.exit(EXIT_SERVICE_ERROR)
     except AWSBreakError as e:
         console.print(f"❌ [red]{e}[/red]")
-        sys.exit(1)
+        sys.exit(EXIT_GENERAL_ERROR)
     except KeyboardInterrupt:
         console.print("\n⚠️  [yellow]Operation cancelled by user[/yellow]")
-        sys.exit(0)
+        sys.exit(EXIT_USER_CANCELLED)
     except Exception as e:
         console.print(f"💥 [red]Unexpected error: {e}[/red]")
         console.print("[dim]Please report this issue with the full error message.[/dim]")
-        sys.exit(1)
+        sys.exit(EXIT_GENERAL_ERROR)
 
 
 if __name__ == "__main__":

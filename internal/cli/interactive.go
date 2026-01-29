@@ -89,13 +89,13 @@ func completeSetup() {
 	roleARN := prompt("Enter IAM Role ARN: ")
 	if roleARN == "" {
 		fmt.Println("❌ Role ARN is required")
-		os.Exit(1)
+		os.Exit(ExitConfigError)
 	}
 
 	// Validate ARN format
 	if err := config.ValidateIAMRoleARN(roleARN); err != nil {
 		fmt.Printf("❌ %v\n", err)
-		os.Exit(1)
+		os.Exit(ExitConfigError)
 	}
 
 	// Get default region
@@ -106,7 +106,7 @@ func completeSetup() {
 
 	if err := config.ValidateRegion(region); err != nil {
 		fmt.Printf("❌ %v\n", err)
-		os.Exit(1)
+		os.Exit(ExitConfigError)
 	}
 
 	// Verify credentials work
@@ -120,7 +120,7 @@ func completeSetup() {
 		fmt.Println("❌")
 		fmt.Printf("   Failed to assume role: %v\n", err)
 		fmt.Println("   Please check the role ARN and trust policy.")
-		os.Exit(1)
+		os.Exit(ExitAuthError)
 	}
 	fmt.Println("✅")
 
@@ -132,7 +132,7 @@ func completeSetup() {
 
 	if err := configMgr.Save(cfg); err != nil {
 		fmt.Printf("❌ Failed to save configuration: %v\n", err)
-		os.Exit(1)
+		os.Exit(ExitConfigError)
 	}
 
 	fmt.Println()
@@ -146,7 +146,7 @@ func interactivePause() {
 	cfg, err := configMgr.Load()
 	if err != nil {
 		fmt.Printf("❌ %v\n", err)
-		os.Exit(1)
+		os.Exit(ExitConfigError)
 	}
 
 	// Determine region
@@ -163,7 +163,7 @@ func interactivePause() {
 	awsCfg, err := authMgr.GetAWSConfig(ctx)
 	if err != nil {
 		fmt.Printf("❌ Authentication failed: %v\n", err)
-		os.Exit(1)
+		os.Exit(ExitAuthError)
 	}
 
 	// Create orchestrator and discover resources
@@ -171,7 +171,7 @@ func interactivePause() {
 	resources, err := orchestrator.DiscoverAll(ctx, region)
 	if err != nil {
 		fmt.Printf("❌ Discovery failed: %v\n", err)
-		os.Exit(1)
+		os.Exit(ExitServiceError)
 	}
 
 	if len(resources) == 0 {
@@ -230,7 +230,7 @@ func interactiveResume() {
 	cfg, err := configMgr.Load()
 	if err != nil {
 		fmt.Printf("❌ %v\n", err)
-		os.Exit(1)
+		os.Exit(ExitConfigError)
 	}
 
 	region := flagRegion
@@ -245,7 +245,7 @@ func interactiveResume() {
 	awsCfg, err := authMgr.GetAWSConfig(ctx)
 	if err != nil {
 		fmt.Printf("❌ Authentication failed: %v\n", err)
-		os.Exit(1)
+		os.Exit(ExitAuthError)
 	}
 
 	// Create orchestrator
@@ -256,7 +256,7 @@ func interactiveResume() {
 	resources, err := orchestrator.DiscoverAll(ctx, region)
 	if err != nil {
 		fmt.Printf("❌ Discovery failed: %v\n", err)
-		os.Exit(1)
+		os.Exit(ExitServiceError)
 	}
 
 	// Filter for stopped resources

@@ -34,11 +34,12 @@ class Config(BaseModel):
     @classmethod
     def validate_region(cls, v: str) -> str:
         """Validate AWS region format."""
-        region_pattern = r'^[a-z]{2}-[a-z]+-\d{1}$'
+        # Updated pattern to support regions like ap-southeast-3, me-central-1, eu-south-2
+        region_pattern = r'^[a-z]{2,3}-[a-z]+-\d+$'
         if not re.match(region_pattern, v):
             raise ValueError(
                 f"Invalid AWS region format: {v}. "
-                "Expected format: us-east-1, eu-west-1, etc."
+                "Expected format: us-east-1, eu-west-1, ap-southeast-3, etc."
             )
         return v
 

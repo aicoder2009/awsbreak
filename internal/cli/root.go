@@ -7,6 +7,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// Exit codes for different error types
+const (
+	ExitSuccess      = 0
+	ExitGeneralError = 1
+	ExitConfigError  = 2
+	ExitAuthError    = 3
+	ExitServiceError = 4
+)
+
 var (
 	// Flags
 	flagGo      bool
@@ -94,7 +103,7 @@ func runResume() {
 
 	if !checkConfiguration() {
 		fmt.Println("❌ No configuration found. Run setup first.")
-		os.Exit(1)
+		os.Exit(ExitConfigError)
 	}
 
 	interactiveResume()

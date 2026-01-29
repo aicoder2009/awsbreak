@@ -11,6 +11,13 @@ import (
 	"github.com/aicoder2009/aws-hit-breaks/internal/models"
 )
 
+const (
+	// MaxConcurrentOperations limits concurrent AWS API calls to avoid rate limiting
+	MaxConcurrentOperations = 5
+	// MaxConcurrentDiscovery limits concurrent discovery operations
+	MaxConcurrentDiscovery = 4
+)
+
 // Orchestrator coordinates operations across all service managers
 type Orchestrator struct {
 	awsCfg   aws.Config
@@ -39,10 +46,17 @@ func (o *Orchestrator) DiscoverAll(ctx context.Context, region string) ([]models
 		errors       []error
 	)
 
+	// Semaphore to limit concurrent discovery operations
+	sem := make(chan struct{}, MaxConcurrentDiscovery)
+
 	for _, mgr := range o.managers {
 		wg.Add(1)
 		go func(m ServiceManager) {
 			defer wg.Done()
+
+			// Acquire semaphore
+			sem <- struct{}{}
+			defer func() { <-sem }()
 
 			resources, err := m.Discover(ctx, region)
 			mu.Lock()
@@ -83,10 +97,17 @@ func (o *Orchestrator) executeOperation(ctx context.Context, resources []models.
 		wg      sync.WaitGroup
 	)
 
+	// Semaphore to limit concurrent operations and avoid AWS rate limiting
+	sem := make(chan struct{}, MaxConcurrentOperations)
+
 	for _, resource := range resources {
 		wg.Add(1)
 		go func(r models.Resource) {
 			defer wg.Done()
+
+			// Acquire semaphore
+			sem <- struct{}{}
+			defer func() { <-sem }()
 
 			start := time.Now()
 			result := models.OperationResult{
