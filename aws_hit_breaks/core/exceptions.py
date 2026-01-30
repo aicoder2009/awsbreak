@@ -35,3 +35,10 @@ class StateError(AWSBreakError):
 class ValidationError(AWSBreakError):
     """Raised when input validation fails."""
     pass
+
+
+class UserCancelled(AWSBreakError):
+    """Raised when user cancels operation (ESC key or Ctrl+C)."""
+
+    def __init__(self, message: str = "Operation cancelled by user"):
+        super().__init__(message)

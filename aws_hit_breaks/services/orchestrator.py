@@ -14,6 +14,7 @@ from .rds import RDSServiceManager
 from .ecs import ECSServiceManager
 from .autoscaling import AutoScalingServiceManager
 from ..core.exceptions import ServiceError
+from ..cli.keyboard import is_cancelled, poll_escape
 
 
 logger = logging.getLogger(__name__)
@@ -92,15 +93,32 @@ class OperationOrchestrator:
             
             for region in self.regions:
                 for service_type in service_types:
+                    # Poll for ESC key and check cancellation
+                    poll_escape()
+                    if is_cancelled():
+                        logger.info("Discovery cancelled by user")
+                        break
                     try:
                         manager = self.get_service_manager(service_type, region)
                         future = executor.submit(manager.discover_resources)
                         future_to_context[future] = (service_type, region)
                     except Exception as e:
                         discovery_errors.append(f"Failed to create {service_type} manager for {region}: {str(e)}")
-            
+
+                # Check for cancellation after inner loop
+                if is_cancelled():
+                    break
+
             # Collect results
             for future in as_completed(future_to_context):
+                # Poll for ESC key and check cancellation
+                poll_escape()
+                if is_cancelled():
+                    logger.info("Discovery cancelled - stopping result collection")
+                    # Cancel pending futures
+                    executor.shutdown(wait=False, cancel_futures=True)
+                    break
+
                 service_type, region = future_to_context[future]
                 try:
                     resources = future.result()
@@ -149,6 +167,11 @@ class OperationOrchestrator:
             future_to_resource = {}
             
             for resource in resources:
+                # Poll for ESC key and check cancellation
+                poll_escape()
+                if is_cancelled():
+                    logger.info("Pause operation cancelled by user")
+                    break
                 try:
                     manager = self.get_service_manager(resource.service_type, resource.region)
                     future = executor.submit(manager.pause_resource, resource)
@@ -164,19 +187,26 @@ class OperationOrchestrator:
                         duration=0.0
                     )
                     operation_results.append(result)
-            
+
             # Collect results
             for future in as_completed(future_to_resource):
+                # Poll for ESC key and check cancellation
+                poll_escape()
+                if is_cancelled():
+                    logger.info("Pause operation cancelled - stopping result collection")
+                    executor.shutdown(wait=False, cancel_futures=True)
+                    break
+
                 resource = future_to_resource[future]
                 try:
                     result = future.result()
                     operation_results.append(result)
-                    
+
                     if result.success:
                         logger.info(f"Successfully paused {resource.service_type} {resource.resource_id}")
                     else:
                         logger.error(f"Failed to pause {resource.service_type} {resource.resource_id}: {result.message}")
-                        
+
                 except Exception as e:
                     # Create failed operation result for unexpected errors
                     result = OperationResult(
@@ -232,6 +262,11 @@ class OperationOrchestrator:
             future_to_resource = {}
             
             for resource in snapshot.resources:
+                # Poll for ESC key and check cancellation
+                poll_escape()
+                if is_cancelled():
+                    logger.info("Resume operation cancelled by user")
+                    break
                 try:
                     manager = self.get_service_manager(resource.service_type, resource.region)
                     future = executor.submit(manager.resume_resource, resource)
@@ -247,19 +282,26 @@ class OperationOrchestrator:
                         duration=0.0
                     )
                     operation_results.append(result)
-            
+
             # Collect results
             for future in as_completed(future_to_resource):
+                # Poll for ESC key and check cancellation
+                poll_escape()
+                if is_cancelled():
+                    logger.info("Resume operation cancelled - stopping result collection")
+                    executor.shutdown(wait=False, cancel_futures=True)
+                    break
+
                 resource = future_to_resource[future]
                 try:
                     result = future.result()
                     operation_results.append(result)
-                    
+
                     if result.success:
                         logger.info(f"Successfully resumed {resource.service_type} {resource.resource_id}")
                     else:
                         logger.error(f"Failed to resume {resource.service_type} {resource.resource_id}: {result.message}")
-                        
+
                 except Exception as e:
                     # Create failed operation result for unexpected errors
                     result = OperationResult(
