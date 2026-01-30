@@ -16,6 +16,13 @@ from aws_hit_breaks.cli.main import main, EXIT_SUCCESS, EXIT_CONFIG_ERROR, EXIT_
 from aws_hit_breaks.core.config import Config, ConfigManager
 from aws_hit_breaks.core.exceptions import ConfigurationError, AuthenticationError, ServiceError, AWSBreakError
 
+# Import version from package metadata
+try:
+    from importlib.metadata import version as get_version
+    CLI_VERSION = get_version('aws-hit-breaks')
+except Exception:
+    CLI_VERSION = "1.0.0"  # Fallback version
+
 
 class TestCLIMainEntryPoint:
     """Test the main CLI entry point with various options and scenarios."""
@@ -473,7 +480,7 @@ class TestCLIVersionAndHelp:
         
         # Verify version is displayed
         assert result.exit_code == EXIT_SUCCESS
-        assert "1.0.0" in result.output
+        assert CLI_VERSION in result.output
     
     def test_cli_help_flag(self):
         """Test CLI --help flag displays help message."""
