@@ -26,6 +26,7 @@ aws_hit_breaks/services/operations.py
 aws_hit_breaks/services/orchestrator.py
 aws_hit_breaks/services/rds.py
 aws_hit_breaks/state/__init__.py
+aws_hit_breaks/state/snapshot_manager.py
 aws_hit_breaks/utils/__init__.py
 tests/test_config.py
 tests/test_iam_auth.py

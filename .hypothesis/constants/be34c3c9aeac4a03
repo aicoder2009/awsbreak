@@ -1,0 +1,4 @@
+# file: /home/runner/work/awsbreak/awsbreak/aws_hit_breaks/core/config.py
+# hypothesis_version: 6.151.4
+
+['+00:00', '.aws-hit-breaks', '.tmp', '1.0.0', 'Default AWS region', 'Z', 'config.json', 'created_at', 'default_region', 'iam_role_arn', 'r', 'us-east-1', 'w']
