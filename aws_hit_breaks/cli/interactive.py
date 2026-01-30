@@ -4,21 +4,29 @@ import sys
 from typing import Optional
 
 from rich.console import Console
-from rich.prompt import Prompt, Confirm
 from rich.panel import Panel
 from rich.text import Text
 
 from aws_hit_breaks.core.config import Config, ConfigManager
 from aws_hit_breaks.auth.iam_auth import IAMRoleAuthenticator, create_cloudformation_template
-from aws_hit_breaks.core.exceptions import AWSBreakError, ConfigurationError, AuthenticationError
+from aws_hit_breaks.core.exceptions import AWSBreakError, ConfigurationError, AuthenticationError, UserCancelled
+from aws_hit_breaks.cli.keyboard import (
+    prompt_with_escape,
+    confirm_with_escape,
+    show_escape_hint,
+    escape_listener,
+    is_cancelled,
+    reset_cancel,
+    poll_escape,
+)
 
 
 class InteractiveFlow:
     """Handles interactive CLI flows for AWS Hit Breaks."""
-    
+
     def __init__(self, console: Console, config_manager: ConfigManager, iam_manager: IAMRoleAuthenticator):
         """Initialize interactive flow.
-        
+
         Args:
             console: Rich console for output
             config_manager: Configuration manager instance
@@ -27,20 +35,52 @@ class InteractiveFlow:
         self.console = console
         self.config_manager = config_manager
         self.iam_manager = iam_manager
+
+    def _handle_cancellation(self, message: str = "Cancel and quit?") -> bool:
+        """Handle ESC key press with confirmation.
+
+        Args:
+            message: Confirmation message to display
+
+        Returns:
+            True if user confirmed cancellation, False to continue
+
+        Raises:
+            UserCancelled: If user confirms they want to quit
+        """
+        # Poll for ESC key press
+        poll_escape()
+
+        if is_cancelled():
+            self.console.print()
+            self.console.print("[yellow]ESC pressed - cancelling...[/yellow]")
+            try:
+                if confirm_with_escape(message, self.console, default=False):
+                    raise UserCancelled("User cancelled operation")
+                else:
+                    # User wants to continue, reset the flag
+                    reset_cancel()
+                    self.console.print("[green]Continuing...[/green]")
+                    return False
+            except UserCancelled:
+                # User pressed ESC again during confirmation - treat as quit
+                raise
+        return False
     
     def setup_iam_role(self) -> None:
         """Guide user through IAM role setup process."""
         self.console.print("I'll create an IAM role with minimal required permissions.")
         self.console.print("This ensures your AWS account stays secure.")
         self.console.print()
-        
+        show_escape_hint(self.console)
+
         # Ask user for setup method
         self.console.print("Choose setup method:")
         self.console.print("1. 📋 Copy CloudFormation template (recommended)")
         self.console.print("2. 🔧 Manual IAM role creation")
         self.console.print()
-        
-        choice = Prompt.ask("Select option", choices=["1", "2"], default="1")
+
+        choice = prompt_with_escape("Select option", self.console, choices=["1", "2"], default="1")
         
         if choice == "1":
             self._setup_with_cloudformation()
@@ -77,7 +117,7 @@ class InteractiveFlow:
         self.console.print()
         
         # Wait for user to deploy
-        Confirm.ask("Have you deployed the CloudFormation template?", default=False)
+        confirm_with_escape("Have you deployed the CloudFormation template?", self.console, default=False)
         
         # Get role ARN from user
         self._get_role_arn_from_user()
@@ -115,7 +155,7 @@ class InteractiveFlow:
     def _get_role_arn_from_user(self) -> None:
         """Get and validate role ARN from user input."""
         while True:
-            role_arn = Prompt.ask("Enter the IAM role ARN")
+            role_arn = prompt_with_escape("Enter the IAM role ARN", self.console)
             
             if not role_arn:
                 self.console.print("❌ [red]Role ARN cannot be empty[/red]")
@@ -146,7 +186,7 @@ class InteractiveFlow:
                 self.console.print("• Your AWS credentials have permission to assume the role")
                 self.console.print()
                 
-                if not Confirm.ask("Try a different role ARN?", default=True):
+                if not confirm_with_escape("Try a different role ARN?", self.console, default=True):
                     sys.exit(1)
     
     def discover_and_pause(self, region: Optional[str], dry_run: bool) -> None:
@@ -154,30 +194,54 @@ class InteractiveFlow:
         self.console.print("🚨 [bold red]AWS Hit Breaks - Emergency Cost Control[/bold red]")
         self.console.print("━" * 50)
         self.console.print()
-        
-        # TODO: Implement service discovery and pause logic
-        # This will be implemented in later tasks
-        self.console.print("🔍 [yellow]Service discovery not yet implemented[/yellow]")
-        self.console.print("This will be available in the next implementation phase.")
+        show_escape_hint(self.console)
+
+        with escape_listener(self.console):
+            # Check for cancellation periodically
+            self._handle_cancellation()
+
+            # TODO: Implement service discovery and pause logic
+            # This will be implemented in later tasks
+            self.console.print("🔍 [yellow]Service discovery not yet implemented[/yellow]")
+            self.console.print("This will be available in the next implementation phase.")
+
+            # Check for cancellation after operations
+            self._handle_cancellation()
     
     def resume_services(self, region: Optional[str], dry_run: bool) -> None:
         """Resume previously paused services."""
         self.console.print("🚨 [bold red]AWS Hit Breaks - Resume Services[/bold red]")
         self.console.print("━" * 40)
         self.console.print()
-        
-        # TODO: Implement resume logic
-        # This will be implemented in later tasks
-        self.console.print("🔄 [yellow]Service resume not yet implemented[/yellow]")
-        self.console.print("This will be available in the next implementation phase.")
+        show_escape_hint(self.console)
+
+        with escape_listener(self.console):
+            # Check for cancellation periodically
+            self._handle_cancellation()
+
+            # TODO: Implement resume logic
+            # This will be implemented in later tasks
+            self.console.print("🔄 [yellow]Service resume not yet implemented[/yellow]")
+            self.console.print("This will be available in the next implementation phase.")
+
+            # Check for cancellation after operations
+            self._handle_cancellation()
     
     def show_status(self, region: Optional[str]) -> None:
         """Show current status of services and snapshots."""
         self.console.print("🚨 [bold red]AWS Hit Breaks - Status[/bold red]")
         self.console.print("━" * 30)
         self.console.print()
-        
-        # TODO: Implement status display
-        # This will be implemented in later tasks
-        self.console.print("📊 [yellow]Status display not yet implemented[/yellow]")
-        self.console.print("This will be available in the next implementation phase.")
+        show_escape_hint(self.console)
+
+        with escape_listener(self.console):
+            # Check for cancellation periodically
+            self._handle_cancellation()
+
+            # TODO: Implement status display
+            # This will be implemented in later tasks
+            self.console.print("📊 [yellow]Status display not yet implemented[/yellow]")
+            self.console.print("This will be available in the next implementation phase.")
+
+            # Check for cancellation after operations
+            self._handle_cancellation()

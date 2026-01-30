@@ -14,7 +14,7 @@ from aws_hit_breaks.core.config import ConfigManager
 from aws_hit_breaks.auth.iam_auth import IAMRoleAuthenticator
 from aws_hit_breaks.cli.interactive import InteractiveFlow
 from aws_hit_breaks.core.exceptions import (
-    AWSBreakError, AuthenticationError, ConfigurationError, ServiceError
+    AWSBreakError, AuthenticationError, ConfigurationError, ServiceError, UserCancelled
 )
 
 
@@ -89,6 +89,9 @@ def main(
             # Default: discover and pause flow
             interactive_flow.discover_and_pause(region, dry_run)
             
+    except (KeyboardInterrupt, UserCancelled):
+        console.print("\n⚠️  [yellow]Operation cancelled by user[/yellow]")
+        sys.exit(EXIT_USER_CANCELLED)
     except ConfigurationError as e:
         console.print(f"❌ [red]Configuration error: {e}[/red]")
         sys.exit(EXIT_CONFIG_ERROR)
@@ -101,9 +104,6 @@ def main(
     except AWSBreakError as e:
         console.print(f"❌ [red]{e}[/red]")
         sys.exit(EXIT_GENERAL_ERROR)
-    except KeyboardInterrupt:
-        console.print("\n⚠️  [yellow]Operation cancelled by user[/yellow]")
-        sys.exit(EXIT_USER_CANCELLED)
     except Exception as e:
         console.print(f"💥 [red]Unexpected error: {e}[/red]")
         console.print("[dim]Please report this issue with the full error message.[/dim]")
