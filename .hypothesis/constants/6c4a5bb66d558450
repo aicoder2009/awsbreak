@@ -1,0 +1,4 @@
+# file: /home/runner/work/awsbreak/awsbreak/aws_hit_breaks/services/ec2.py
+# hypothesis_version: 6.151.4
+
+[0.0, 0.1, 'AvailabilityZone', 'InstanceId', 'InstanceType', 'Instances', 'Key', 'LaunchTime', 'Name', 'Placement', 'Platform', 'PrivateIpAddress', 'PublicIpAddress', 'Reservations', 'State', 'SubnetId', 'Tags', 'Value', 'VpcId', 'availability_zone', 'discovery', 'ec2', 'instance_type', 'launch_time', 'linux', 'pause', 'pending', 'platform', 'private_ip', 'public_ip', 'resume', 'running', 'stopped', 'stopping', 'subnet_id', 'terminated', 'vpc_id']

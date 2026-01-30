@@ -1,0 +1,4 @@
+# file: /home/runner/work/awsbreak/awsbreak/aws_hit_breaks/auth/iam_auth.py
+# hypothesis_version: 6.151.4
+
+[900, 3600, 'AccessDenied', 'AccessKeyId', 'Code', 'Credentials', 'Error', 'Expiration', 'Message', 'SecretAccessKey', 'SessionToken', 'Unknown', 'sts']

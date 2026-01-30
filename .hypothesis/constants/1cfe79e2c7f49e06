@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/rich/prompt.py
+# hypothesis_version: 6.151.4
+
+['/', ': ', 'DefaultType', 'Enter a fruit', 'PromptType', '__main__', 'apple', 'n', 'orange', 'pear', 'prompt', 'prompt.choices', 'prompt.default', 'y']
